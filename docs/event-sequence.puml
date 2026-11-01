@@ -1,0 +1,41 @@
+@startuml event-sequence
+' ลำดับการทำงานของ Event เมื่อผู้เล่นเดินชนประตูภารกิจแล้วแก้สมการถูก
+skinparam dpi 150
+skinparam defaultFontName Tahoma
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam sequenceParticipantBackgroundColor #FFFDF5
+skinparam sequenceParticipantBorderColor #5A4A3A
+skinparam sequenceLifeLineBorderColor #8C6D46
+skinparam ArrowColor #5A4A3A
+skinparam noteBackgroundColor #FFF6D5
+skinparam noteBorderColor #C9A66B
+
+actor "ผู้เล่น" as U
+participant GamePanel as GP
+participant Level as L
+participant PuzzleDoor as PD
+participant PuzzleDialog as DLG
+participant ExpressionEvaluator as EV
+participant Inventory as INV
+
+U -> GP : กดปุ่ม D\n(KeyEvent → keyPressed)
+GP -> GP : tryMove(1, 0)
+GP -> L : findDoorAt(x, y)
+L --> GP : PuzzleDoor (ล็อกอยู่)
+GP -> GP : timer.stop()
+GP -> PD : interact(player, this)
+PD -> DLG : new PuzzleDialog(...)\nsetVisible(true)
+note right of DLG : หน้าต่าง modal\nโค้ดใน PuzzleDoor หยุดรอ\nจนกว่าหน้าต่างจะปิด
+U -> DLG : กดปุ่มไอเทม\n(ActionEvent)
+DLG -> DLG : equation.add(item)\nrefresh()
+U -> DLG : กดปุ่ม "ตกลง"\n(ActionEvent)
+DLG -> EV : evaluate(equation)
+EV --> DLG : 16.0
+DLG -> INV : remove(item) ทุกตัวที่ใช้
+DLG -> DLG : solved = true\ndispose()
+DLG --> PD : (หน้าต่างปิด)
+PD -> PD : isSolved() → unlock()
+PD --> GP : return
+GP -> GP : timer.start()\nrepaint()\nrequestFocusInWindow()
+@enduml

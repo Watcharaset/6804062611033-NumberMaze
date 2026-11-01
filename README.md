@@ -6,6 +6,16 @@ Mini project วิชา Object-Oriented Programming — เกมเขาว�
 
 ![ภาพหน้าจอเกม ด่าน 3](docs/screenshot.png)
 
+## ไฟล์ที่ส่ง
+
+| ไฟล์ | คำอธิบาย |
+|---|---|
+| [NumberMaze.jar](NumberMaze.jar) | ไฟล์เกม ดับเบิลคลิกเพื่อเล่น (ต้องมี Java 17 ขึ้นไป) |
+| [docs/NumberMaze-Report.pdf](docs/NumberMaze-Report.pdf) | รายงานฉบับสมบูรณ์ (PDF) |
+| [docs/NumberMaze-Report.docx](docs/NumberMaze-Report.docx) | รายงานฉบับสมบูรณ์ (Word) |
+| ไฟล์ `.java` ในโฟลเดอร์หลัก | Source code ทั้งหมด 20 คลาส |
+| [docs/](docs) | Class Diagram, โครงสร้าง GUI และ Sequence Diagram (ไฟล์ `.png` และต้นฉบับ PlantUML `.puml`) |
+
 ## เนื้อเรื่อง
 
 นักสำรวจติดอยู่ในเขาวงกตลึกลับ ซึ่งแต่ละเส้นทางถูกปิดกั้นด้วย "ประตูรหัสผ่าน" วิธีเดียวที่จะผ่านไปได้คือการแก้สมการให้ถูกต้อง ผู้เล่นต้องเดินสำรวจเพื่อเก็บตัวเลขและเครื่องหมายที่กระจายอยู่ในด่าน แล้วนำมาจัดเรียงเพื่อปลดล็อกเส้นทางสู่ทางออก
@@ -37,7 +47,7 @@ Mini project วิชา Object-Oriented Programming — เกมเขาว�
 
 ต้องมี Java 17 ขึ้นไป
 
-**แบบที่ 1 — เล่นทันที:** ดาวน์โหลด `NumberMaze.jar` จากหน้า [Releases](../../releases) แล้วดับเบิลคลิก หรือรันคำสั่ง
+**แบบที่ 1 — เล่นทันที:** ดาวน์โหลด [`NumberMaze.jar`](NumberMaze.jar) (หรือจากหน้า [Releases](../../releases)) แล้วดับเบิลคลิก หรือรันคำสั่ง
 
 ```bash
 java -jar NumberMaze.jar

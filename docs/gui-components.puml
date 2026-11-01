@@ -1,0 +1,37 @@
+@startwbs gui-components
+' โครงสร้าง Component ของ GUI ในเกม
+skinparam dpi 150
+skinparam defaultFontName Tahoma
+skinparam defaultFontSize 12
+skinparam shadowing false
+<style>
+wbsDiagram {
+  node { BackgroundColor #FFFDF5; LineColor #5A4A3A; RoundCorner 8; Padding 6 }
+  arrow { LineColor #5A4A3A }
+  :depth(0) { BackgroundColor #E8DFCF; FontStyle bold }
+  :depth(1) { BackgroundColor #F3E9D2; FontStyle bold }
+}
+</style>
+* GUI ของเกม Number Maze
+** JFrame "Number Maze"\n(สร้างใน Main)
+*** GamePanel\n(extends JPanel)
+**** วาดเองด้วย\npaintComponent()
+***** พื้น / กำแพง
+***** Item, Door,\nObstacle, Player
+***** HUD: ชื่อด่าน,\nข้อความ, กระเป๋า
+***** หน้าจอ\nYOU SURVIVED!
+**** KeyListener\n(KeyAdapter)
+**** javax.swing.Timer\n(ทุก 200 ms)
+** PuzzleDialog\n(extends JDialog, modal)
+*** JPanel root\n(BorderLayout)
+**** NORTH: JLabel\nรูปประตู + เป้าหมาย
+**** CENTER: JPanel\n(GridLayout 3×1)
+***** JLabel สมการ
+***** JLabel ข้อความแจ้งเตือน
+***** JPanel ปุ่มไอเทม\n(FlowLayout)\nJButton × จำนวนไอเทม
+**** SOUTH: JPanel\n(FlowLayout)
+***** JButton ลบตัวสุดท้าย,\nล้าง, ตกลง, ยกเลิก
+** JOptionPane
+*** "ถูกต้อง! ประตูเปิดแล้ว"
+*** "ผ่านด่าน ... แล้ว!"
+@endwbs
