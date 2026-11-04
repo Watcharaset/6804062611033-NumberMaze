@@ -60,6 +60,12 @@ javac -encoding UTF-8 *.java
 java Main
 ```
 
+**แบบที่ 3 — รันจากไฟล์เดียว:** โค้ดทั้ง 20 คลาสถูกรวมไว้ใน [`single-file/NumberMaze.java`](single-file/NumberMaze.java) ด้วย (เนื้อหาเหมือนไฟล์แยกทุกอย่าง) รันจากโฟลเดอร์หลักของโปรเจ็คเพื่อให้หาโฟลเดอร์ `images/` เจอ
+
+```bash
+java -Dfile.encoding=UTF-8 single-file/NumberMaze.java
+```
+
 **สร้างไฟล์ jar เอง:** ดับเบิลคลิก `build.bat` (Windows) จะได้ไฟล์ `dist\NumberMaze.jar`
 
 ## โครงสร้างคลาส
