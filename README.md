@@ -62,7 +62,7 @@ java Main
 
 **แบบที่ 3 — โหลด zip แล้วเล่นได้เลย:** ดาวน์โหลด [`NumberMaze-SingleFile.zip`](NumberMaze-SingleFile.zip?raw=1) แตกไฟล์ (คลิกขวา > Extract All) แล้วดับเบิลคลิก `run.bat` (Windows) หรือพิมพ์ `sh run.sh` (macOS/Linux) ข้างในมีโค้ดไฟล์เดียว `NumberMaze.java`, โฟลเดอร์ `images/` และวิธีใช้ `README.txt`
 
-**แบบที่ 4 — รันจากไฟล์เดียว:** โค้ดทั้ง 20 คลาสถูกรวมไว้ใน [`single-file/NumberMaze.java`](single-file/NumberMaze.java) ด้วย (เนื้อหาเหมือนไฟล์แยกทุกอย่าง) รันจากโฟลเดอร์หลักของโปรเจ็คเพื่อให้หาโฟลเดอร์ `images/` เจอ
+**แบบที่ 4 — รันจากไฟล์เดียว:** โค้ดทั้ง 20 คลาสถูกรวมไว้ใน [`single-file/NumberMaze.java`](single-file/NumberMaze.java) ด้วย (โค้ดเหมือนไฟล์แยกทุกอย่าง แต่ไม่มีคอมเมนต์ ถ้าต้องการคำอธิบายให้ดูไฟล์แยก) รันจากโฟลเดอร์หลักของโปรเจ็คเพื่อให้หาโฟลเดอร์ `images/` เจอ
 
 ```bash
 java -Dfile.encoding=UTF-8 single-file/NumberMaze.java

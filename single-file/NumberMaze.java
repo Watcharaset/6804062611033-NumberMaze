@@ -1,16 +1,3 @@
-/*
- * เขาวงกตตัวเลข (Number Maze) — รวมโค้ดทั้ง 20 คลาสไว้ในไฟล์เดียว
- * ผู้จัดทำ: 6804062611033 นายวัชรเศรษฐ์ ว่องรัตน์วานิช
- *
- * Java อนุญาตให้มี public class ได้แค่ 1 คลาสต่อไฟล์ จึงให้ NumberMaze (เดิมคือ Main) เป็น public
- * ส่วนคลาสอื่นเป็นคลาสธรรมดา (package-private) ที่อยู่ในไฟล์เดียวกัน การทำงานเหมือนเดิมทุกอย่าง
- *
- * วิธีรัน (ต้องมี Java 17 ขึ้นไป) — รันจากโฟลเดอร์หลักของโปรเจ็ค เพื่อให้หาโฟลเดอร์ images/ เจอ:
- *     java -Dfile.encoding=UTF-8 single-file/NumberMaze.java
- * หรือ compile ก่อนแล้วค่อยรัน:
- *     javac -encoding UTF-8 -d out single-file/NumberMaze.java
- *     java -cp out NumberMaze
- */
 import java.awt.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -36,26 +23,19 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
-// ======================================================================
-// Main.java  (เดิมชื่อคลาส Main)
-// ======================================================================
 public class NumberMaze {
     public static void main(String[] args) {
         useThaiFont();
 
-        JFrame frame = new JFrame("Number Maze");      // สร้างหน้าต่าง
-        frame.add(new GamePanel());                    // ใส่พื้นที่วาดเกมลงไป
-        frame.pack();                                  // ปรับขนาดหน้าต่างให้พอดีกับ GamePanel
+        JFrame frame = new JFrame("Number Maze");
+        frame.add(new GamePanel());
+        frame.pack();
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);             // ให้หน้าต่างอยู่กลางจอ
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    /**
-     * ฟอนต์เริ่มต้นของ Swing ไม่มีตัวอักษรไทย ทำให้กล่องข้อความ (JOptionPane) แสดงเป็นสี่เหลี่ยม □□□
-     * จึงเปลี่ยนฟอนต์เริ่มต้นของทุก component เป็น Tahoma ซึ่งรองรับภาษาไทย
-     */
     private static void useThaiFont() {
         FontUIResource thai = new FontUIResource("Tahoma", Font.PLAIN, 14);
         Enumeration<Object> keys = UIManager.getDefaults().keys();
@@ -68,42 +48,38 @@ public class NumberMaze {
     }
 }
 
-// ======================================================================
-// GamePanel.java
-// ======================================================================
-class GamePanel extends JPanel {           // Inheritance: สืบทอดจาก JPanel
-    private static final int TILE = 44;           // ขนาดช่องละ 44 พิกเซล
-    private static final int HUD_HEIGHT = 112;    // ความสูงแถบข้อมูลด้านล่าง
+class GamePanel extends JPanel {
+    private static final int TILE = 44;
+    private static final int HUD_HEIGHT = 112;
     private static final Font THAI_FONT = new Font("Tahoma", Font.BOLD, 15);
 
     private int levelIndex;
-    private Level level;                          // Composition: GamePanel "มี" Level
-    private Player player;                        // Composition: GamePanel "มี" Player
-    private String message = "";                  // ข้อความแจ้งเตือนใน HUD
+    private Level level;
+    private Player player;
+    private String message = "";
     private boolean gameWon = false;
-    private final Timer timer;                    // นาฬิกาของเกม ใช้ขยับอุปสรรค
+    private final Timer timer;
 
     public GamePanel() {
         loadLevel(0);
-        setFocusable(true);                      // ต้องเปิด ไม่งั้น JPanel จะรับปุ่มกดไม่ได้
+        setFocusable(true);
 
-        // ฟังการกดปุ่มคีย์บอร์ด
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (gameWon) {
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         gameWon = false;
-                        loadLevel(0);             // เล่นใหม่ตั้งแต่ด่านแรก
+                        loadLevel(0);
                     }
                     return;
                 }
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_W, KeyEvent.VK_UP    -> tryMove(0, -1);   // ขึ้น
-                    case KeyEvent.VK_S, KeyEvent.VK_DOWN  -> tryMove(0, 1);    // ลง
-                    case KeyEvent.VK_A, KeyEvent.VK_LEFT  -> tryMove(-1, 0);   // ซ้าย
-                    case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> tryMove(1, 0);    // ขวา
-                    case KeyEvent.VK_R -> {                                    // เริ่มด่านใหม่
+                    case KeyEvent.VK_W, KeyEvent.VK_UP    -> tryMove(0, -1);
+                    case KeyEvent.VK_S, KeyEvent.VK_DOWN  -> tryMove(0, 1);
+                    case KeyEvent.VK_A, KeyEvent.VK_LEFT  -> tryMove(-1, 0);
+                    case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> tryMove(1, 0);
+                    case KeyEvent.VK_R -> {
                         loadLevel(levelIndex);
                         message = "เริ่มด่านใหม่แล้ว";
                     }
@@ -111,22 +87,19 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
             }
         });
 
-        // ทุก 0.2 วินาที ให้อุปสรรคขยับ แล้วเช็คว่าผู้เล่นโดนหรือไม่
         timer = new Timer(200, e -> tick());
         timer.start();
     }
 
-    /** โหลดด่านใหม่: สร้างแผนที่และผู้เล่นใหม่ (กระเป๋าว่าง) */
     private void loadLevel(int index) {
         levelIndex = index;
         level = Levels.create(index);
         player = new Player(level.getStartX(), level.getStartY());
         message = "";
 
-        // แต่ละด่านขนาดไม่เท่ากัน → ปรับขนาดหน้าต่างให้พอดีกับแผนที่
         setPreferredSize(new Dimension(level.getWidth() * TILE, level.getHeight() * TILE + HUD_HEIGHT));
         Window window = SwingUtilities.getWindowAncestor(this);
-        if (window != null) {                     // ตอนเริ่มเกมครั้งแรกยังไม่มีหน้าต่าง Main จะ pack() ให้เอง
+        if (window != null) {
             window.pack();
             window.setLocationRelativeTo(null);
         }
@@ -138,13 +111,12 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
             return;
         }
         for (Obstacle obstacle : level.getObstacles()) {
-            obstacle.update(level);               // Polymorphism: หนามกับผู้พิทักษ์ขยับไม่เหมือนกัน
+            obstacle.update(level);
         }
         checkObstacles();
         repaint();
     }
 
-    /** ถ้าผู้เล่นยืนอยู่ช่องเดียวกับอุปสรรคที่กำลังอันตราย → ส่งกลับจุดเริ่มต้น (ไอเทมยังอยู่ในกระเป๋า) */
     private void checkObstacles() {
         for (Obstacle obstacle : level.getObstacles()) {
             if (obstacle.isDangerous() && obstacle.getX() == player.getX() && obstacle.getY() == player.getY()) {
@@ -155,22 +127,21 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
         }
     }
 
-    /** พยายามเดินไป dx, dy ช่อง ถ้าเป็นกำแพงจะเดินไม่ได้ ถ้าเป็นประตูที่ล็อกอยู่จะเรียก interact() */
     private void tryMove(int dx, int dy) {
         int newX = player.getX() + dx;
         int newY = player.getY() + dy;
 
         if (level.isWall(newX, newY)) {
-            return;                               // ชนกำแพง → ไม่ขยับ
+            return;
         }
 
         Door door = level.findDoorAt(newX, newY);
         if (door != null && door.isLocked()) {
-            timer.stop();                         // หยุดเวลาระหว่างแก้สมการ ผู้พิทักษ์จะได้ไม่เดินมาชน
-            door.interact(player, this);          // Polymorphism: PuzzleDoor เปิดหน้าต่างสมการ, ExitDoor จบด่าน
+            timer.stop();
+            door.interact(player, this);
             timer.start();
             repaint();
-            requestFocusInWindow();               // เอาโฟกัสคีย์บอร์ดกลับมาที่เกมหลังปิดหน้าต่าง
+            requestFocusInWindow();
             return;
         }
 
@@ -185,7 +156,6 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
         repaint();
     }
 
-    /** ExitDoor เรียกเมธอดนี้เมื่อผู้เล่นเข้าประตูชัย */
     public void completeLevel() {
         if (levelIndex + 1 < Levels.count()) {
             JOptionPane.showMessageDialog(this, "ผ่าน" + level.getName() + " แล้ว!\nไปด่านต่อไปกันเลย",
@@ -198,13 +168,12 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
     }
 
     @Override
-    protected void paintComponent(Graphics g) {   // Polymorphism: override เมธอดของ JPanel
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        // 1) พื้นและกำแพง
         for (int row = 0; row < level.getHeight(); row++) {
             for (int col = 0; col < level.getWidth(); col++) {
                 boolean wall = level.isWall(col, row);
@@ -218,16 +187,13 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
             }
         }
 
-        // 2) วาดทุกอย่างในด่าน — แต่ละ Object รู้วิธีวาดตัวเอง (Polymorphism)
         for (Item item : level.getItems())             item.draw(g, TILE);
         for (Door door : level.getDoors())             door.draw(g, TILE);
         for (Obstacle obstacle : level.getObstacles()) obstacle.draw(g, TILE);
         player.draw(g, TILE);
 
-        // 3) แถบข้อมูลด้านล่าง
         drawHud(g);
 
-        // 4) หน้าจอชนะ
         if (gameWon) {
             drawWinScreen(g);
         }
@@ -238,7 +204,6 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
         g.setColor(new Color(30, 30, 40));
         g.fillRect(0, top, getWidth(), HUD_HEIGHT);
 
-        // บรรทัดที่ 1: ชื่อด่าน (ซ้าย) + วิธีเริ่มใหม่ (ขวา)
         g.setFont(THAI_FONT);
         FontMetrics fm = g.getFontMetrics();
         g.setColor(Color.WHITE);
@@ -248,11 +213,9 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
         String hint = "R = เริ่มด่านใหม่";
         g.drawString(hint, getWidth() - fm.stringWidth(hint) - 10, top + 22);
 
-        // บรรทัดที่ 2: ข้อความแจ้งเตือน (กึ่งกลาง)
         g.setColor(new Color(255, 210, 90));
         g.drawString(message, (getWidth() - fm.stringWidth(message)) / 2, top + 46);
 
-        // บรรทัดที่ 3: Inventory
         g.setColor(Color.WHITE);
         g.drawString("กระเป๋า:", 10, top + 88);
         int x = 80;
@@ -263,7 +226,7 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
     }
 
     private void drawWinScreen(Graphics g) {
-        g.setColor(new Color(0, 0, 0, 190));                  // พื้นดำโปร่งแสง
+        g.setColor(new Color(0, 0, 0, 190));
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setFont(new Font("Arial", Font.BOLD, 56));
@@ -281,16 +244,8 @@ class GamePanel extends JPanel {           // Inheritance: สืบทอดจ
     }
 }
 
-// ======================================================================
-// Levels.java
-// ======================================================================
-/**
- * เก็บข้อมูลแผนที่ของทุกด่าน
- * create() สร้าง Level ใหม่ทุกครั้ง จึงใช้ตอน "เริ่มด่านใหม่" ได้ด้วย (ไอเทมและประตูกลับมาครบ)
- */
 class Levels {
-
-    private Levels() { }                        // คลาสนี้ไม่ต้องสร้าง Object
+    private Levels() { }
 
     public static int count() {
         return 3;
@@ -298,8 +253,6 @@ class Levels {
 
     public static Level create(int index) {
         return switch (index) {
-            // ด่าน 1: ไม่มีอุปสรรค ฝึกเดินสำรวจและเก็บไอเทม
-            // a: 3 + 4 = 7   |   b: 2 * 5 = 10 (ต้องเก็บ 2 ไว้ใช้ในห้องสุดท้าย)
             case 0 -> new Level("ด่าน 1: ห้องฝึกหัด", new String[]{
                 "###############",
                 "#P....#.......#",
@@ -314,8 +267,6 @@ class Levels {
                 "###############",
             }, Map.of('a', 7, 'b', 10));
 
-            // ด่าน 2: กับดักหนาม ต้องรอจังหวะหนามหด
-            // a: 9 - 6 / 2 = 6   |   b: 3 + 1 = 4
             case 1 -> new Level("ด่าน 2: ทางหนาม", new String[]{
                 "###############",
                 "#P..#.....^^^9#",
@@ -330,8 +281,6 @@ class Levels {
                 "###############",
             }, Map.of('a', 6, 'b', 4));
 
-            // ด่าน 3: แผนที่ใหญ่ 21x13, หนาม + ผู้พิทักษ์ 2 ตัว, มีไอเทมหลอก
-            // a: 7 * 3 - 5 = 16   |   b: 9 + 8 / 2 = 13 (ต้องเก็บ 2 จากห้องแรกไว้)   |   c: 6 * 4 - 7 + 1 = 18
             case 2 -> new Level("ด่าน 3: ผู้พิทักษ์", new String[]{
                 "#####################",
                 "#P..#.^^.2#..+..#.^8#",
@@ -353,18 +302,6 @@ class Levels {
     }
 }
 
-// ======================================================================
-// Level.java
-// ======================================================================
-/**
- * ด่านหนึ่งด่าน — อ่านแผนที่จากข้อความแล้วสร้าง Object ต่างๆ ในด่าน
- *
- * สัญลักษณ์ในแผนที่:
- *   #  กำแพง            .  ทางเดิน          P  จุดเริ่มต้นผู้เล่น
- *   0-9  ตัวเลข          + - * /  เครื่องหมาย
- *   a-z  ประตูภารกิจ (เป้าหมายกำหนดใน doorTargets)
- *   E  ประตูชัย          ^  กับดักหนาม       G  ผู้พิทักษ์
- */
 class Level {
     private final String name;
     private final char[][] grid;
@@ -381,7 +318,7 @@ class Level {
             for (int col = 0; col < grid[row].length; col++) {
                 char c = grid[row][col];
                 if (c == '#' || c == '.') {
-                    continue;                                   // กำแพง/ทางเดิน เก็บไว้ใน grid ตามเดิม
+                    continue;
                 }
 
                 if (c == 'P') {
@@ -406,7 +343,7 @@ class Level {
                 } else {
                     throw new IllegalStateException("ไม่รู้จักสัญลักษณ์ '" + c + "' ใน " + name);
                 }
-                grid[row][col] = '.';                           // ช่องที่มี Object อยู่ ถือเป็นทางเดิน
+                grid[row][col] = '.';
             }
         }
     }
@@ -421,12 +358,10 @@ class Level {
         return grid[y][x] == '#';
     }
 
-    /** ผู้พิทักษ์เดินผ่านกำแพงและประตูไม่ได้ (จะได้อยู่แต่ในห้องของตัวเอง) */
     public boolean isBlockedForGuard(int x, int y) {
         return isWall(x, y) || findDoorAt(x, y) != null;
     }
 
-    /** หยิบไอเทมที่ (x, y) ออกจากแผนที่ ถ้าไม่มีคืนค่า null */
     public Item takeItemAt(int x, int y) {
         for (Item item : items) {
             if (item.getX() == x && item.getY() == y) {
@@ -451,15 +386,8 @@ class Level {
     public List<Obstacle> getObstacles() { return Collections.unmodifiableList(obstacles); }
 }
 
-// ======================================================================
-// GameObject.java
-// ======================================================================
-/**
- * คลาสแม่ของทุกสิ่งในเกม (ผู้เล่น, ไอเทม, ประตู ...)
- * เป็น abstract เพราะ "วัตถุในเกม" เฉยๆ ไม่มีหน้าตา ต้องให้คลาสลูกกำหนดเองว่าจะวาดอย่างไร
- */
 abstract class GameObject {
-    protected int x, y;   // ตำแหน่งบนตาราง (x = คอลัมน์, y = แถว) — protected ให้คลาสลูกใช้ได้
+    protected int x, y;
 
     public GameObject(int x, int y) {
         this.x = x;
@@ -469,19 +397,14 @@ abstract class GameObject {
     public int getX() { return x; }
     public int getY() { return y; }
 
-    /** คลาสลูกทุกตัวต้อง implement เมธอดนี้ (Abstract method) */
     public abstract void draw(Graphics g, int tileSize);
 }
 
-// ======================================================================
-// Player.java
-// ======================================================================
-/** นักสำรวจ — ตัวละครที่ผู้เล่นควบคุม */
-class Player extends GameObject {       // Inheritance: สืบทอดจาก GameObject
-    private final Inventory inventory = new Inventory();   // Composition: ผู้เล่น "มี" กระเป๋า
+class Player extends GameObject {
+    private final Inventory inventory = new Inventory();
 
     public Player(int x, int y) {
-        super(x, y);                            // เรียก Constructor ของคลาสแม่
+        super(x, y);
     }
 
     public void moveTo(int newX, int newY) {
@@ -496,22 +419,17 @@ class Player extends GameObject {       // Inheritance: สืบทอดจา
     @Override
     public void draw(Graphics g, int tile) {
         if (Sprites.PLAYER != null) {
-            // ตัวละครสูงกว่าช่อง จึงวาดสูง 1.3 เท่า โดยเท้าอยู่ขอบล่างของช่อง
             int h = (int) (tile * 1.3);
             Sprites.drawFit(g, Sprites.PLAYER, x * tile, (y + 1) * tile - h, tile, h);
         } else {
-            g.setColor(Color.BLUE);             // ไม่มีรูป → วาดวงกลมสีน้ำเงินแทน
+            g.setColor(Color.BLUE);
             g.fillOval(x * tile + 6, y * tile + 6, tile - 12, tile - 12);
         }
     }
 }
 
-// ======================================================================
-// Inventory.java
-// ======================================================================
-/** กระเป๋าเก็บไอเทมของผู้เล่น */
 class Inventory {
-    private final List<Item> items = new ArrayList<>();   // Encapsulation: ข้างนอกแก้ list ตรงๆ ไม่ได้
+    private final List<Item> items = new ArrayList<>();
 
     public void add(Item item) {
         items.add(item);
@@ -521,7 +439,6 @@ class Inventory {
         items.remove(item);
     }
 
-    /** คืน list แบบอ่านอย่างเดียว เพื่อไม่ให้คลาสอื่นแอบเพิ่ม/ลบไอเทมเอง */
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
@@ -531,51 +448,35 @@ class Inventory {
     }
 }
 
-// ======================================================================
-// Item.java
-// ======================================================================
-/**
- * ไอเทมที่เก็บได้ในเขาวงกต (ตัวเลข หรือ เครื่องหมาย)
- * วิธีวาดเหมือนกันทุกไอเทม แต่ "สัญลักษณ์" และ "สี" ให้คลาสลูกเป็นคนกำหนด
- */
 abstract class Item extends GameObject {
-
     public Item(int x, int y) {
         super(x, y);
     }
 
-    /** ข้อความที่แสดงบนไอเทม เช่น "3" หรือ "+" */
     public abstract String getSymbol();
 
-    /** สีพื้นหลังของไอเทม */
     public abstract Color getColor();
 
-    /** วาดไอเทมบนแผนที่ตามตำแหน่งในตาราง */
     @Override
     public void draw(Graphics g, int tile) {
         drawAt(g, x * tile, y * tile, tile);
     }
 
-    /** วาดไอเทมที่ตำแหน่งพิกเซลใดก็ได้ (ใช้ทั้งบนแผนที่และในแถบ Inventory) */
     public void drawAt(Graphics g, int px, int py, int size) {
         int pad = size / 8;
-        g.setColor(getColor());                               // Polymorphism: แต่ละคลาสลูกให้สีต่างกัน
+        g.setColor(getColor());
         g.fillRoundRect(px + pad, py + pad, size - pad * 2, size - pad * 2, 10, 10);
 
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, size / 2));
         FontMetrics fm = g.getFontMetrics();
-        String s = getSymbol();                               // Polymorphism: แต่ละคลาสลูกให้สัญลักษณ์ต่างกัน
-        int textX = px + (size - fm.stringWidth(s)) / 2;      // จัดให้อยู่กึ่งกลางช่อง
+        String s = getSymbol();
+        int textX = px + (size - fm.stringWidth(s)) / 2;
         int textY = py + (size + fm.getAscent() - fm.getDescent()) / 2;
         g.drawString(s, textX, textY);
     }
 }
 
-// ======================================================================
-// NumberItem.java
-// ======================================================================
-/** ไอเทมตัวเลข 0-9 */
 class NumberItem extends Item {
     private final int value;
 
@@ -590,13 +491,9 @@ class NumberItem extends Item {
     public String getSymbol() { return String.valueOf(value); }
 
     @Override
-    public Color getColor() { return new Color(255, 230, 120); }   // สีเหลือง
+    public Color getColor() { return new Color(255, 230, 120); }
 }
 
-// ======================================================================
-// OperatorItem.java
-// ======================================================================
-/** ไอเทมเครื่องหมาย + - * / */
 class OperatorItem extends Item {
     private final char operator;
 
@@ -611,26 +508,15 @@ class OperatorItem extends Item {
     public String getSymbol() { return String.valueOf(operator); }
 
     @Override
-    public Color getColor() { return new Color(140, 200, 255); }   // สีฟ้า
+    public Color getColor() { return new Color(140, 200, 255); }
 }
 
-// ======================================================================
-// Interactable.java
-// ======================================================================
-/** สิ่งที่ผู้เล่นเดินชนแล้ว "มีปฏิกิริยา" เช่น ประตูรหัสผ่าน, ประตูชัย */
 interface Interactable {
     void interact(Player player, GamePanel game);
 }
 
-// ======================================================================
-// Door.java
-// ======================================================================
-/**
- * คลาสแม่ของประตูทุกชนิด
- * ประตูทุกบานมีสถานะ ล็อก/ไม่ล็อก แต่ "ชนแล้วเกิดอะไรขึ้น" ให้คลาสลูกกำหนดเอง
- */
 abstract class Door extends GameObject implements Interactable {
-    private boolean locked = true;              // ประตูเริ่มต้นล็อกเสมอ
+    private boolean locked = true;
 
     public Door(int x, int y) {
         super(x, y);
@@ -640,16 +526,11 @@ abstract class Door extends GameObject implements Interactable {
         return locked;
     }
 
-    /** protected: ให้เฉพาะคลาสลูก (เช่น PuzzleDoor) เป็นคนปลดล็อกได้ คลาสอื่นปลดล็อกเองไม่ได้ */
     protected void unlock() {
         locked = false;
     }
 }
 
-// ======================================================================
-// PuzzleDoor.java
-// ======================================================================
-/** ประตูภารกิจ — ต้องจัดเรียงสมการให้ได้ผลลัพธ์เท่ากับ target จึงจะเปิด */
 class PuzzleDoor extends Door {
     private final int target;
 
@@ -662,12 +543,11 @@ class PuzzleDoor extends Door {
         return target;
     }
 
-    /** เปิดหน้าต่างแก้สมการ ถ้าแก้ถูกประตูจะปลดล็อก */
     @Override
     public void interact(Player player, GamePanel game) {
         Window owner = SwingUtilities.getWindowAncestor(game);
         PuzzleDialog dialog = new PuzzleDialog(owner, target, player.getInventory());
-        dialog.setVisible(true);                // หน้าต่างแบบ modal: โค้ดจะหยุดรอจนกว่าจะปิดหน้าต่าง
+        dialog.setVisible(true);
         if (dialog.isSolved()) {
             unlock();
         }
@@ -681,7 +561,6 @@ class PuzzleDoor extends Door {
             return;
         }
         if (isLocked()) {
-            // ประตูปิด: สีส้ม + แสดงเป้าหมาย
             g.setColor(Color.ORANGE);
             g.fillRect(px, py, tile, tile);
             g.setColor(new Color(120, 60, 0));
@@ -693,7 +572,6 @@ class PuzzleDoor extends Door {
             FontMetrics fm = g.getFontMetrics();
             g.drawString(s, px + (tile - fm.stringWidth(s)) / 2, py + (tile + fm.getAscent()) / 2 - 2);
         } else {
-            // ประตูเปิด: เหลือแค่กรอบประตู เดินผ่านได้
             g.setColor(new Color(160, 100, 40));
             g.fillRect(px, py, 6, tile);
             g.fillRect(px + tile - 6, py, 6, tile);
@@ -702,7 +580,6 @@ class PuzzleDoor extends Door {
 
     private void drawWithSprite(Graphics2D g, int px, int py, int tile) {
         if (!isLocked()) {
-            // ประตูเปิดแล้ว: วาดจางๆ ให้รู้ว่าเคยมีประตูตรงนี้
             Composite old = g.getComposite();
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
             Sprites.drawFit(g, Sprites.PUZZLE_DOOR, px, py, tile, tile);
@@ -711,7 +588,6 @@ class PuzzleDoor extends Door {
         }
         Sprites.drawFit(g, Sprites.PUZZLE_DOOR, px, py, tile, tile);
 
-        // ป้ายเป้าหมายสีดำด้านล่างประตู เช่น "=16"
         String s = "=" + target;
         g.setFont(new Font("Arial", Font.BOLD, 12));
         FontMetrics fm = g.getFontMetrics();
@@ -724,12 +600,7 @@ class PuzzleDoor extends Door {
     }
 }
 
-// ======================================================================
-// ExitDoor.java
-// ======================================================================
-/** ประตูชัย — ไม่ต้องไขรหัส เดินชนแล้วผ่านด่านทันที */
 class ExitDoor extends Door {
-
     public ExitDoor(int x, int y) {
         super(x, y);
     }
@@ -748,7 +619,7 @@ class ExitDoor extends Door {
         }
         g.setColor(new Color(40, 180, 70));
         g.fillRect(px, py, tile, tile);
-        g.setColor(new Color(255, 215, 0));                  // ขอบสีทอง
+        g.setColor(new Color(255, 215, 0));
         g.drawRect(px + 2, py + 2, tile - 5, tile - 5);
 
         g.setColor(Color.WHITE);
@@ -758,36 +629,21 @@ class ExitDoor extends Door {
     }
 }
 
-// ======================================================================
-// Obstacle.java
-// ======================================================================
-/**
- * คลาสแม่ของอุปสรรค ถ้าผู้เล่นโดนตอนที่อุปสรรค "อันตราย" จะถูกส่งกลับจุดเริ่มต้นของด่าน
- * อุปสรรคแต่ละแบบเปลี่ยนสถานะตามเวลาต่างกัน จึงให้คลาสลูก implement update() เอง
- */
 abstract class Obstacle extends GameObject {
-
     public Obstacle(int x, int y) {
         super(x, y);
     }
 
-    /** ถูกเรียกทุก tick (ทุก 0.2 วินาที) */
     public abstract void update(Level level);
 
-    /** ตอนนี้ถ้าผู้เล่นอยู่ช่องเดียวกันจะโดนหรือไม่ */
     public abstract boolean isDangerous();
 
-    /** ข้อความที่แสดงเมื่อผู้เล่นโดน */
     public abstract String getHitMessage();
 }
 
-// ======================================================================
-// Spike.java
-// ======================================================================
-/** กับดักหนาม — โผล่ขึ้น-หดลงเป็นจังหวะ ต้องรอจังหวะที่หนามหดแล้วค่อยเดินผ่าน */
 class Spike extends Obstacle {
-    private static final int UP_TICKS = 5;      // หนามโผล่ 5 tick (1 วินาที)
-    private static final int CYCLE_TICKS = 11;  // ครบรอบ 11 tick (หดลง 1.2 วินาที)
+    private static final int UP_TICKS = 5;
+    private static final int CYCLE_TICKS = 11;
 
     private int tick = 0;
 
@@ -813,11 +669,10 @@ class Spike extends Obstacle {
     @Override
     public void draw(Graphics g, int tile) {
         int px = x * tile, py = y * tile;
-        g.setColor(new Color(150, 130, 120));                // พื้นกับดัก
+        g.setColor(new Color(150, 130, 120));
         g.fillRect(px + 2, py + 2, tile - 4, tile - 4);
 
         if (isDangerous()) {
-            // วาดหนามสามเหลี่ยม 3 อัน
             g.setColor(new Color(220, 40, 40));
             int w = tile / 3;
             for (int i = 0; i < 3; i++) {
@@ -826,7 +681,6 @@ class Spike extends Obstacle {
                               new int[]{py + tile - 6, py + 8, py + tile - 6}, 3);
             }
         } else {
-            // หนามหด เหลือแค่รู
             g.setColor(new Color(90, 80, 70));
             for (int i = 0; i < 3; i++) {
                 g.fillOval(px + 6 + i * (tile / 3), py + tile / 2 - 3, 6, 6);
@@ -835,14 +689,10 @@ class Spike extends Obstacle {
     }
 }
 
-// ======================================================================
-// Guard.java
-// ======================================================================
-/** ผู้พิทักษ์ — เดินลาดตระเวนซ้าย-ขวา ชนกำแพงหรือประตูแล้วเดินกลับ ห้ามเดินชน! */
 class Guard extends Obstacle {
-    private static final int MOVE_EVERY = 2;    // ขยับทุก 2 tick (0.4 วินาที)
+    private static final int MOVE_EVERY = 2;
 
-    private int direction = 1;                  // 1 = ไปทางขวา, -1 = ไปทางซ้าย
+    private int direction = 1;
     private int tick = 0;
 
     public Guard(int x, int y) {
@@ -856,7 +706,7 @@ class Guard extends Obstacle {
             return;
         }
         if (level.isBlockedForGuard(x + direction, y)) {
-            direction = -direction;             // ข้างหน้าตัน → หันกลับ
+            direction = -direction;
         }
         if (!level.isBlockedForGuard(x + direction, y)) {
             x += direction;
@@ -865,7 +715,7 @@ class Guard extends Obstacle {
 
     @Override
     public boolean isDangerous() {
-        return true;                            // ผู้พิทักษ์อันตรายตลอดเวลา
+        return true;
     }
 
     @Override
@@ -883,7 +733,6 @@ class Guard extends Obstacle {
         g.setColor(new Color(200, 30, 30));
         g.fillRoundRect(px + 5, py + 5, tile - 10, tile - 10, 12, 12);
 
-        // ดวงตามองไปทางที่กำลังเดิน
         g.setColor(Color.WHITE);
         int eyeY = py + tile / 3;
         g.fillOval(px + tile / 3 - 4 + direction * 3, eyeY, 8, 8);
@@ -891,17 +740,13 @@ class Guard extends Obstacle {
     }
 }
 
-// ======================================================================
-// PuzzleDialog.java
-// ======================================================================
-/** หน้าต่างให้ผู้เล่นเลือกไอเทมจาก Inventory มาเรียงเป็นสมการ */
 class PuzzleDialog extends JDialog {
     private static final Font THAI_FONT = new Font("Tahoma", Font.PLAIN, 16);
     private static final Font BIG_FONT = new Font("Arial", Font.BOLD, 28);
 
     private final int target;
     private final Inventory inventory;
-    private final List<Item> equation = new ArrayList<>();   // ไอเทมที่เลือกมาเรียงแล้ว
+    private final List<Item> equation = new ArrayList<>();
     private boolean solved = false;
 
     private final JLabel equationLabel = new JLabel(" ", SwingConstants.CENTER);
@@ -913,17 +758,15 @@ class PuzzleDialog extends JDialog {
         this.target = target;
         this.inventory = inventory;
 
-        // ส่วนบน: เป้าหมาย
         JLabel targetLabel = new JLabel("จัดเรียงให้ได้ผลลัพธ์ = " + target, SwingConstants.CENTER);
         targetLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
-        if (Sprites.PUZZLE_DOOR != null) {                    // รูปประตูภารกิจอยู่ด้านบนข้อความ
+        if (Sprites.PUZZLE_DOOR != null) {
             Image icon = Sprites.PUZZLE_DOOR.getScaledInstance(80, 90, Image.SCALE_SMOOTH);
             targetLabel.setIcon(new ImageIcon(icon));
             targetLabel.setHorizontalTextPosition(SwingConstants.CENTER);
             targetLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
         }
 
-        // ส่วนกลาง: สมการที่กำลังเรียง + ข้อความแจ้งเตือน + ปุ่มไอเทม
         equationLabel.setFont(BIG_FONT);
         messageLabel.setFont(THAI_FONT);
         messageLabel.setForeground(new Color(200, 0, 0));
@@ -933,7 +776,6 @@ class PuzzleDialog extends JDialog {
         center.add(messageLabel);
         center.add(itemPanel);
 
-        // ส่วนล่าง: ปุ่มควบคุม
         JButton undoButton = makeButton("ลบตัวสุดท้าย");
         JButton clearButton = makeButton("ล้าง");
         JButton submitButton = makeButton("ตกลง");
@@ -975,9 +817,7 @@ class PuzzleDialog extends JDialog {
         return solved;
     }
 
-    /** อัปเดตหน้าจอ: แสดงสมการปัจจุบัน และสร้างปุ่มไอเทมใหม่ */
     private void refresh() {
-        // แสดงสมการ
         if (equation.isEmpty()) {
             equationLabel.setText("?");
         } else {
@@ -988,7 +828,6 @@ class PuzzleDialog extends JDialog {
             equationLabel.setText(sb.toString().trim());
         }
 
-        // สร้างปุ่มจากไอเทมใน Inventory — ไอเทมที่เลือกไปแล้วจะกดซ้ำไม่ได้
         itemPanel.removeAll();
         if (inventory.size() == 0) {
             JLabel empty = new JLabel("กระเป๋าว่างเปล่า — ไปเก็บตัวเลขและเครื่องหมายก่อน");
@@ -1012,13 +851,12 @@ class PuzzleDialog extends JDialog {
         itemPanel.repaint();
     }
 
-    /** ตรวจคำตอบ: ถ้าถูก ลบไอเทมที่ใช้ออกจาก Inventory แล้วปิดหน้าต่าง */
     private void submit() {
         try {
             double result = ExpressionEvaluator.evaluate(equation);
             if (Math.abs(result - target) < 1e-9) {
                 for (Item item : equation) {
-                    inventory.remove(item);          // ไอเทมที่ใช้แล้วหายไป
+                    inventory.remove(item);
                 }
                 solved = true;
                 JOptionPane.showMessageDialog(this, "ถูกต้อง! ประตูเปิดแล้ว", "สำเร็จ",
@@ -1029,7 +867,7 @@ class PuzzleDialog extends JDialog {
                         + " ยังไม่ตรงกับเป้าหมาย " + target);
             }
         } catch (IllegalArgumentException | ArithmeticException ex) {
-            messageLabel.setText(ex.getMessage());   // สมการผิดรูปแบบ หรือ หารด้วยศูนย์
+            messageLabel.setText(ex.getMessage());
         }
     }
 
@@ -1040,22 +878,13 @@ class PuzzleDialog extends JDialog {
     }
 }
 
-// ======================================================================
-// ExpressionEvaluator.java
-// ======================================================================
-/**
- * คำนวณสมการจากไอเทม ตามลำดับความสำคัญทางคณิตศาสตร์จริง (คูณ/หาร ก่อน บวก/ลบ)
- * เช่น 3 + 2 * 4 = 11 (ไม่ใช่ 20)
- */
 class ExpressionEvaluator {
-
-    /** ตรวจรูปแบบสมการ: ต้องเป็น ตัวเลข เครื่องหมาย ตัวเลข เครื่องหมาย ... ตัวเลข */
     public static void validate(List<Item> tokens) {
         if (tokens.isEmpty()) {
             throw new IllegalArgumentException("ยังไม่ได้เลือกไอเทมเลย");
         }
         for (int i = 0; i < tokens.size(); i++) {
-            boolean shouldBeNumber = (i % 2 == 0);          // ตำแหน่งคู่ = ตัวเลข, ตำแหน่งคี่ = เครื่องหมาย
+            boolean shouldBeNumber = (i % 2 == 0);
             Item token = tokens.get(i);
             if (shouldBeNumber && !(token instanceof NumberItem)) {
                 throw new IllegalArgumentException("ต้องสลับ ตัวเลข กับ เครื่องหมาย และขึ้นต้นด้วยตัวเลข");
@@ -1072,11 +901,6 @@ class ExpressionEvaluator {
         }
     }
 
-    /**
-     * คำนวณ 2 รอบ
-     * รอบที่ 1: ไล่จากซ้ายไปขวา ทำ * และ / ทันที ส่วน + และ - เก็บไว้ก่อน
-     * รอบที่ 2: นำตัวเลขที่เหลือมา + และ - จากซ้ายไปขวา
-     */
     public static double evaluate(List<Item> tokens) {
         validate(tokens);
 
@@ -1084,7 +908,6 @@ class ExpressionEvaluator {
         List<Character> operators = new ArrayList<>();
         numbers.add(valueOf(tokens.get(0)));
 
-        // รอบที่ 1: * และ /
         for (int i = 1; i < tokens.size(); i += 2) {
             char op = ((OperatorItem) tokens.get(i)).getOperator();
             double next = valueOf(tokens.get(i + 1));
@@ -1098,12 +921,11 @@ class ExpressionEvaluator {
                 }
                 numbers.set(last, numbers.get(last) / next);
             } else {
-                operators.add(op);          // + หรือ - เก็บไว้ทำรอบที่ 2
+                operators.add(op);
                 numbers.add(next);
             }
         }
 
-        // รอบที่ 2: + และ -
         double result = numbers.get(0);
         for (int i = 0; i < operators.size(); i++) {
             if (operators.get(i) == '+') {
@@ -1115,7 +937,6 @@ class ExpressionEvaluator {
         return result;
     }
 
-    /** แสดงผลลัพธ์: ถ้าเป็นจำนวนเต็มไม่ต้องมีทศนิยม เช่น 11 แทน 11.0 */
     public static String format(double value) {
         if (value == Math.rint(value)) {
             return String.valueOf((long) value);
@@ -1128,13 +949,6 @@ class ExpressionEvaluator {
     }
 }
 
-// ======================================================================
-// Sprites.java
-// ======================================================================
-/**
- * โหลดรูปภาพทั้งหมดของเกมจากโฟลเดอร์ images/ เพียงครั้งเดียวตอนเริ่มโปรแกรม
- * ถ้าหารูปไม่เจอ ค่าจะเป็น null และแต่ละคลาสจะวาดเป็นรูปทรงแทน (เกมยังเล่นได้)
- */
 class Sprites {
     public static final BufferedImage PLAYER      = load("player.png");
     public static final BufferedImage PUZZLE_DOOR = load("puzzle_door.png");
@@ -1147,11 +961,11 @@ class Sprites {
 
     private static BufferedImage load(String name) {
         try {
-            URL url = Sprites.class.getResource("/images/" + name);   // กรณีรันจากไฟล์ .jar
+            URL url = Sprites.class.getResource("/images/" + name);
             if (url != null) {
                 return ImageIO.read(url);
             }
-            File file = new File("images", name);                     // กรณีรันจาก VS Code
+            File file = new File("images", name);
             if (file.exists()) {
                 return ImageIO.read(file);
             }
@@ -1162,9 +976,6 @@ class Sprites {
         return null;
     }
 
-    /**
-     * วาดรูปให้พอดีกรอบ w x h โดยไม่บิดสัดส่วน (จัดกึ่งกลางแนวนอน ชิดขอบล่าง)
-     */
     public static void drawFit(Graphics g, Image img, int x, int y, int w, int h) {
         int iw = img.getWidth(null), ih = img.getHeight(null);
         double scale = Math.min((double) w / iw, (double) h / ih);
